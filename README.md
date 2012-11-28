@@ -11,7 +11,7 @@ there's info here:
 
 https://www.cs.cmu.edu/~quake/triangle.switch.html
 
-the triangle++ wrapper has a heavily modified version of triangle, this uses the strait thing: 
+the triangle++ wrapper has a heavily modified version of triangle, this uses the straight thing: 
 
 https://www.cs.cmu.edu/~quake/triangle.html
 
