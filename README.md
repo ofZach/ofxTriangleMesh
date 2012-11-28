@@ -17,12 +17,13 @@ https://www.cs.cmu.edu/~quake/triangle.html
 
 note: this addon is pretty rough still, so please test this before using it in production. 
 
+examples of smallest minimum angle constraints: 
+
+![](http://i.imgur.com/WEptv.png)
+![](http://i.imgur.com/SdeHh.png)
+
 examples of size constraints: 
 
 ![](http://i.imgur.com/NM3DB.png)
 ![](http://i.imgur.com/8yveL.png)
 
-smallest minimum angle constraints: 
-
-![](http://i.imgur.com/WEptv.png)
-![](http://i.imgur.com/SdeHh.png)
