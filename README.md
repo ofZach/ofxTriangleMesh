@@ -19,12 +19,12 @@ note: this addon is pretty rough still, so please test this before using it in p
 
 examples of size constraints: 
 
-http://s10.postimage.org/ecq035xpz/Screen_Shot_2012_11_28_at_4_17_56_PM.png
-http://s10.postimage.org/up01swc1j/Screen_Shot_2012_11_28_at_4_26_00_PM.png
+![size constraint example](http://s10.postimage.org/ecq035xpz/Screen_Shot_2012_11_28_at_4_17_56_PM.png)
+![size constraint example](http://s10.postimage.org/up01swc1j/Screen_Shot_2012_11_28_at_4_26_00_PM.png)
 
 smallest minimum angle constraints: 
 
-http://s10.postimage.org/bl6qcjz7b/Screen_Shot_2012_11_28_at_4_26_40_PM.png
-http://s10.postimage.org/pswf17bw7/Screen_Shot_2012_11_28_at_4_26_45_PM.png
+![minimum angle constraint example](http://s10.postimage.org/bl6qcjz7b/Screen_Shot_2012_11_28_at_4_26_40_PM.png)
+![minimum angle constraint example](http://s10.postimage.org/pswf17bw7/Screen_Shot_2012_11_28_at_4_26_45_PM.png)
 
 
