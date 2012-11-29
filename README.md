@@ -19,11 +19,11 @@ note: this addon is pretty rough still, so please test this before using it in p
 
 examples of smallest minimum angle constraints: 
 
-![](http://i.imgur.com/WEptv.png)
-![](http://i.imgur.com/SdeHh.png)
+![](http://i.imgur.com/wzZWW.png)
+![](http://i.imgur.com/sjvPM.png)
 
 examples of size constraints: 
 
-![](http://i.imgur.com/NM3DB.png)
-![](http://i.imgur.com/8yveL.png)
+![](http://i.imgur.com/QoBPb.png)
+![](http://i.imgur.com/rP2ol.png)
 
