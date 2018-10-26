@@ -1,12 +1,6 @@
 #include "ofxTriangleMesh.h"
 #include "triangle.h"
 
-
-
-
-
-
-
 void triangulatePoints(char * flags, triangulateio * in, triangulateio * mid, 
                        triangulateio * out){
 
@@ -95,7 +89,7 @@ void ofxTriangleMesh::triangulate(ofPolyline contour, float angleConstraint, flo
     
     
     std::map < int , ofPoint  > goodPts;
-    
+    ofPoint cachedVertex; // avoid allocation
     for (int i = 0; i < out.numberoftriangles; i++) {
         meshTriangle triangle;
         
@@ -117,8 +111,12 @@ void ofxTriangleMesh::triangulate(ofPolyline contour, float angleConstraint, flo
 		
         
         // here we check if a triangle is "inside" a contour to drop non inner triangles
-        
-        if( isPointInsidePolygon(&contour[0], contour.size(), getTriangleCenter(tr) ) ) {
+        cachedVertex.x =contour[0].x;
+        cachedVertex.y =contour[0].y;
+        cachedVertex.z =contour[0].z;
+        if( isPointInsidePolygon(&cachedVertex,
+                                 contour.size(),
+                                 getTriangleCenter(tr) ) ) {
             triangle.randomColor = ofColor(ofRandom(0,255), ofRandom(0,255), ofRandom(0,255));
             triangles.push_back(triangle);
             
@@ -192,7 +190,7 @@ ofPoint ofxTriangleMesh::getTriangleCenter(ofPoint *tr){
     return ofPoint(c_x, c_y);
 }
 
-bool ofxTriangleMesh::isPointInsidePolygon(ofPoint *polygon,int N, ofPoint p)
+bool ofxTriangleMesh::isPointInsidePolygon(const ofPoint *polygon,int N, ofPoint p)
 {
     int counter = 0;
     int i;
