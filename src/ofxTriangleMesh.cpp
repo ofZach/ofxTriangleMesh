@@ -89,7 +89,7 @@ void ofxTriangleMesh::triangulate(ofPolyline contour, float angleConstraint, flo
     
     
     std::map < int , ofPoint  > goodPts;
-    ofPoint cachedVertex; // avoid allocation
+    ofPoint cachedVertex;
     for (int i = 0; i < out.numberoftriangles; i++) {
         meshTriangle triangle;
         
