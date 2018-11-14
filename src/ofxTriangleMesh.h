@@ -65,7 +65,7 @@ class ofxTriangleMesh {
     
         
         ofPoint getTriangleCenter(ofPoint *tr);
-        bool isPointInsidePolygon(ofPoint *polygon,int N, ofPoint p);
+		bool isPointInsidePolygon(const vector<ofDefaultVec3>& polygon,int N, ofPoint p);
 
         void draw();
         void clear();
@@ -80,3 +80,4 @@ class ofxTriangleMesh {
 
 
 };
+
