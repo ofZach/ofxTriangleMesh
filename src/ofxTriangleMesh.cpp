@@ -230,9 +230,9 @@ void ofxTriangleMesh::draw() {
     
         ofFill();
         ofSetColor( triangles[i].randomColor);
-        ofTriangle( outputPts[triangles[i].index[0]], 
-        outputPts[triangles[i].index[1]],
-                   outputPts[triangles[i].index[2]]);
+        ofDrawTriangle( outputPts[triangles[i].index[0]],
+                        outputPts[triangles[i].index[1]],
+                        outputPts[triangles[i].index[2]] ); 
         
     }
     
