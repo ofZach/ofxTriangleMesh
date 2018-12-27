@@ -118,7 +118,7 @@ void ofxTriangleMesh::triangulate(ofPolyline contour, float angleConstraint, flo
         
         // here we check if a triangle is "inside" a contour to drop non inner triangles
         
-        if( isPointInsidePolygon(&contour[0], contour.size(), getTriangleCenter(tr) ) ) {
+        if( isPointInsidePolygon(contour.getVertices(), contour.size(), getTriangleCenter(tr) ) ) {
             triangle.randomColor = ofColor(ofRandom(0,255), ofRandom(0,255), ofRandom(0,255));
             triangles.push_back(triangle);
             
@@ -192,12 +192,12 @@ ofPoint ofxTriangleMesh::getTriangleCenter(ofPoint *tr){
     return ofPoint(c_x, c_y);
 }
 
-bool ofxTriangleMesh::isPointInsidePolygon(ofPoint *polygon,int N, ofPoint p)
+bool ofxTriangleMesh::isPointInsidePolygon(const vector<ofDefaultVec3>& polygon,int N, ofPoint p)
 {
     int counter = 0;
     int i;
     double xinters;
-    ofPoint p1,p2;
+	ofDefaultVec3 p1,p2;
 
     p1 = polygon[0];
 
@@ -230,9 +230,9 @@ void ofxTriangleMesh::draw() {
     
         ofFill();
         ofSetColor( triangles[i].randomColor);
-        ofTriangle( outputPts[triangles[i].index[0]], 
-        outputPts[triangles[i].index[1]],
-                   outputPts[triangles[i].index[2]]);
+        ofDrawTriangle( outputPts[triangles[i].index[0]],
+                        outputPts[triangles[i].index[1]],
+                        outputPts[triangles[i].index[2]] ); 
         
     }
     
@@ -242,3 +242,4 @@ void ofxTriangleMesh::draw() {
     triangulatedMesh.drawWireframe();
     
 }
+
