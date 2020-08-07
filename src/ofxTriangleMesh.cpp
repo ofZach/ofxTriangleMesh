@@ -6,17 +6,23 @@
 
 namespace {
 
-void TriangulatePoints(char * flags, triangulateio * in, triangulateio * mid, 
-                       triangulateio * out) {
+// Wrap the Triangle function to avoid aliasing issues.
+void TriangulatePoints(
+    char * flags, triangulateio * in, 
+    triangulateio * mid, 
+    triangulateio * out) 
+{
     triangulate(flags, in,  mid, out);
 }
 
-// QuickHull's Divide & Conquer step :
-// finds the farest vertex from segment AB in direct order,
-// then filter the vertices set and continue further.
+// Types wrappers
 typedef ofDefaultVec3 Vec2_t;
 #define Vec2_t(x,y) Vec2_t(x, y, 0.0f)
 typedef vector<Vec2_t> PointVector_t;
+
+// QuickHull 2D Divide & Conquer step :
+// Finds the farest vertex from segment AB in direct order, then filter the 
+// vertices set and continue further.
 void FindHullVertex2D(Vec2_t const &A,
                       Vec2_t const &B,
                       PointVector_t const &vertices,
@@ -99,7 +105,7 @@ ofxTriangleMesh::ofxTriangleMesh(){
     nTriangles = 0;
 }
 
-void ofxTriangleMesh::triangulate(ofPolyline contour, float angleConstraint, float sizeConstraint)
+void ofxTriangleMesh::triangulate(const ofPolyline &contour, float angleConstraint, float sizeConstraint)
 {
 ///
 /// Emulate the original method, which act like a Constrained Delaunay
@@ -112,6 +118,7 @@ void ofxTriangleMesh::triangulate(ofPolyline contour, float angleConstraint, flo
     // Transform the polyline loop into separate buffers
     // of points and segments while removing the last dupplicate element.
     const auto &vertices = contour.getVertices();
+
     const int size = vertices.size() - 1;
     for (int i = 0; i<size; ++i) {
         points.push_back(vertices[i]);
@@ -369,6 +376,24 @@ void ofxTriangleMesh::generateVoronoiDiagram(const VertexVector_t &points, bool 
         voronoiSegments[i] = glm::ivec2(e1, e2);
     }
 
+    /*
+    // Detect interior segments for clean voronoi
+    voronoiInsideSegments.clear();
+    voronoiInsideSegments.resize(voronoiSegments.size());
+    
+    //const auto &poly = points;
+    
+    int index(0);
+    for (const auto &s : voronoiSegments) {
+        const auto &a = voronoiPoints[s.x];
+        const auto &b = voronoiPoints[s.y];
+
+        bool inside1 = ofInsidePoly(a, poly);
+        bool inside2 = ofInsidePoly(b, poly);
+        voronoiInsideSegments[index++] = (inside1 && inside2);
+    }
+    */
+
     if (in.pointlist) free(in.pointlist);
     if (in.segmentlist) free(in.segmentlist);
     if (in.holelist) free(in.holelist);
@@ -386,69 +411,58 @@ void ofxTriangleMesh::generateVoronoiDiagram(const VertexVector_t &points, bool 
 }
 
 void ofxTriangleMesh::drawVoronoi() const {
-    for (const auto &s : voronoiSegments) {
-        const auto &a = voronoiPoints[s.x];
-        const auto &b = voronoiPoints[s.y];
-        ofDrawLine(a.x, a.y, b.x, b.y);
+  for (const auto &s : voronoiSegments) {
+    const auto &a = voronoiPoints[s.x];
+    const auto &b = voronoiPoints[s.y];
+    ofDrawLine(a.x, a.y, b.x, b.y);
+  }
+}
+
+void ofxTriangleMesh::drawCleanVoronoi(const VertexVector_t& poly) const {
+  /// @note
+  /// Neither efficient nor it seems always true when the shape contains
+  /// holes.
+
+  for (const auto &s : voronoiSegments) {
+    const auto &a = voronoiPoints[s.x];
+    const auto &b = voronoiPoints[s.y];
+
+    bool inside1 = ofInsidePoly(a, poly);
+    bool inside2 = ofInsidePoly(b, poly);
+    if ((inside1 && inside2)) {
+      ofDrawLine(a.x, a.y, b.x, b.y);
     }
+  }
+
 }
 
 /* -------------------------------------------------------------------------- */
 
-void ofxTriangleMesh::clear(){
-    triangles.clear();
-    nTriangles = 0;
-}
-
-ofPoint ofxTriangleMesh::getTriangleCenter(ofPoint *tr){
-    float c_x = (tr[0].x + tr[1].x + tr[2].x) / 3;
-    float c_y = (tr[0].y + tr[1].y + tr[2].y) / 3;
-    return ofPoint(c_x, c_y);
-}
-
-bool ofxTriangleMesh::isPointInsidePolygon(const vector<ofDefaultVec3>& polygon,int N, ofPoint p)
+void ofxTriangleMesh::clear() 
 {
-    int counter = 0;
-    int i;
-    double xinters;
-    ofDefaultVec3 p1,p2;
-
-    p1 = polygon[0];
-
-    for (i=1;i<=N;i++)
-    {
-        p2 = polygon[i % N];
-        if (p.y > MIN(p1.y,p2.y)) {
-            if (p.y <= MAX(p1.y,p2.y)) {
-                if (p.x <= MAX(p1.x,p2.x)) {
-                    if (p1.y != p2.y) {
-                        xinters = (p.y-p1.y)*(p2.x-p1.x)/(p2.y-p1.y)+p1.x;
-                        if (p1.x == p2.x || p.x <= xinters){
-                            counter++;
-                        }
-                    }
-                }
-            }
-        }
-        p1 = p2;
-    }
-    return counter % 2 != 0;
+  triangles.clear();
+  nTriangles = 0;
 }
 
-void ofxTriangleMesh::draw() const
+void ofxTriangleMesh::draw(bool use_debug_color) const
 {
-    // draw the triangles in their random colors:
-    int index=0; 
-    for (const auto& tri : triangles){
-        ofFill();
+  // draw the triangles in their random colors:
+  int index = 0;
+  for (const auto& tri : triangles) {
+    ofFill();
+    if (use_debug_color) {
         ofSetColor( randomColors[index++] );
-        ofDrawTriangle( outputPts[tri.index[0]],
-                        outputPts[tri.index[1]],
-                        outputPts[tri.index[2]] );
     }
-    
-    // draw the mesh as a wire frame in white on top. 
+    ofDrawTriangle( outputPts[tri.index[0]],
+                    outputPts[tri.index[1]],
+                    outputPts[tri.index[2]] );
+  }
+
+  // draw the mesh as a wire frame in white on top. 
+  if (use_debug_color) {
     ofSetColor(255,255,255);
     triangulatedMesh.drawWireframe();
+  }
 }
 
+/* -------------------------------------------------------------------------- */
