@@ -13,14 +13,12 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
-    
     ofBackgroundGradient(ofColor::white, ofColor(200,200,200), OF_GRADIENT_LINEAR);
     
-    line.draw();
-    
-    
     mesh.draw();
+
+    ofSetColor(ofColor(150));
+    line.draw();    
 }
 
 //--------------------------------------------------------------
