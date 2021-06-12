@@ -447,21 +447,23 @@ void ofxTriangleMesh::clear()
 void ofxTriangleMesh::draw(bool use_debug_color) const
 {
   // draw the triangles in their random colors:
-  int index = 0;
-  for (const auto& tri : triangles) {
-    ofFill();
-    if (use_debug_color) {
-        ofSetColor( randomColors[index++] );
-    }
-    ofDrawTriangle( outputPts[tri.index[0]],
-                    outputPts[tri.index[1]],
-                    outputPts[tri.index[2]] );
-  }
-
-  // draw the mesh as a wire frame in white on top. 
   if (use_debug_color) {
+    int index = 0;
+    for (const auto& tri : triangles) {
+      ofFill();
+      if (use_debug_color) {
+          ofSetColor( randomColors[index++] );
+      }
+      ofDrawTriangle( outputPts[tri.index[0]],
+                      outputPts[tri.index[1]],
+                      outputPts[tri.index[2]] );
+    }
+
+    // draw the mesh as a wire frame in white on top.
     ofSetColor(255,255,255);
-    triangulatedMesh.drawWireframe();
+    drawWireframe();
+  } else {
+    triangulatedMesh.draw();
   }
 }
 

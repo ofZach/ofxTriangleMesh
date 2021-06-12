@@ -44,7 +44,8 @@ class ofxTriangleMesh {
     // 100 to 200 is a good first guess for screen resolution based points
     void triangulate(const ofPolyline &contour, float angleConstraint=-1, float sizeConstraint=-1);    
 
-    void draw(bool use_debug_color = true) const;
+    void draw(bool use_debug_color = false) const;
+
     void clear();
 
     // Triangulation output.
@@ -52,10 +53,11 @@ class ofxTriangleMesh {
     vector <ofPoint> outputPts;
     vector <meshTriangle> triangles;
     vector <ofColor> randomColors;
+    
     ofMesh triangulatedMesh;
 
-    // [extension]
-    public :
+  // [extension]
+  public :
     // Aliases of internal types (for easy change if needed).
     typedef ofPoint Vertex_t;
     typedef vector<ofPoint> VertexVector_t;
@@ -128,6 +130,15 @@ class ofxTriangleMesh {
 
     void drawVoronoi() const;
     void drawCleanVoronoi(const VertexVector_t& poly) const;
+
+
+    void drawWireframe() const {
+      triangulatedMesh.drawWireframe();
+    }
+
+    ofMesh& mesh() {
+      return triangulatedMesh;
+    }
 
     // Voronoi diagram output.
     VertexVector_t voronoiPoints;

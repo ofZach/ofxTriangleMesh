@@ -15,7 +15,7 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackgroundGradient(ofColor::white, ofColor(200,200,200), OF_GRADIENT_LINEAR);
     
-    mesh.draw();
+    mesh.draw(true);
 
     ofSetColor(ofColor(150));
     line.draw();    
