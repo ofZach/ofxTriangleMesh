@@ -1,7 +1,7 @@
 #pragma once
 
+#include <array>
 #include "ofMain.h"
-
 #include "ofxGui.h"
 #include "ofxTriangleMesh.h"
 
@@ -56,9 +56,7 @@ class ofApp : public ofBaseApp{
 		ofxLabel typeLabel_;
 
 		// Polygon geometrical datas.
-		std::vector<ofPoint> vertices_;
-		std::vector<glm::ivec2> segments_;
-		std::vector<ofPoint> holes_;
+		ofxTriangleMesh::Polygon_t polygon_;
 
 		// Generated at import.
 		std::vector<ofPolyline*> polylines_;
@@ -66,6 +64,8 @@ class ofApp : public ofBaseApp{
 		ofPoint center_;
 
 		// Triangulated mesh.
-		ofxTriangleMesh trimeshes_[kNumTriangulationType];
+		std::array<ofxTriangleMesh, kNumTriangulationType> trimeshes_;
 		ofxTriangleMesh *trimesh_current_;
+
+		bool bUseDebugColor = true;
 };

@@ -21,52 +21,52 @@ void ofApp::setup()
 #if 1
 
   // Read from a 'Triangle' poly file.
-  ReadPolyFile("data/A.poly");
+  ReadPolyFile( ofToDataPath("A.poly") );
 
 #else
 
   // Example with custom shape
 
-  vertices_.push_back(ofPoint(0, 0));
-  vertices_.push_back(ofPoint(ofGetWidth(), 0));
-  vertices_.push_back(ofPoint(ofGetWidth(), ofGetHeight()));
-  vertices_.push_back(ofPoint(0, ofGetHeight()));
+  polygon_.points.push_back(ofPoint(0, 0));
+  polygon_.points.push_back(ofPoint(ofGetWidth(), 0));
+  polygon_.points.push_back(ofPoint(ofGetWidth(), ofGetHeight()));
+  polygon_.points.push_back(ofPoint(0, ofGetHeight()));
 
   float midx = ofGetWidth() / 2.0f;
   float midy = ofGetHeight() / 2.0f;
   float side = ofGetWidth() / 6.0f;
 
-  vertices_.push_back(ofPoint(midx-side, midy-side));
-  vertices_.push_back(ofPoint(midx+side, midy-side));
-  vertices_.push_back(ofPoint(midx+side, midy+side));
-  vertices_.push_back(ofPoint(midx-side, midy+side));
+  polygon_.points.push_back(ofPoint(midx-side, midy-side));
+  polygon_.points.push_back(ofPoint(midx+side, midy-side));
+  polygon_.points.push_back(ofPoint(midx+side, midy+side));
+  polygon_.points.push_back(ofPoint(midx-side, midy+side));
 
-  segments_.push_back(glm::ivec2(0, 1));
-  segments_.push_back(glm::ivec2(1, 2));
-  segments_.push_back(glm::ivec2(2, 3));
-  segments_.push_back(glm::ivec2(3, 0));
-  segments_.push_back(glm::ivec2(4, 5));
-  segments_.push_back(glm::ivec2(5, 6));
-  segments_.push_back(glm::ivec2(6, 7));
-  segments_.push_back(glm::ivec2(7, 4));
+  polygon_.segments.push_back(glm::ivec2(0, 1));
+  polygon_.segments.push_back(glm::ivec2(1, 2));
+  polygon_.segments.push_back(glm::ivec2(2, 3));
+  polygon_.segments.push_back(glm::ivec2(3, 0));
+  polygon_.segments.push_back(glm::ivec2(4, 5));
+  polygon_.segments.push_back(glm::ivec2(5, 6));
+  polygon_.segments.push_back(glm::ivec2(6, 7));
+  polygon_.segments.push_back(glm::ivec2(7, 4));
 
-  holes_.push_back(ofPoint(midx, midy));
+  polygon_.holes.push_back(ofPoint(midx, midy));
 
 #endif
 
   // Extract contours as polylines
   int lastIndex = -1;
   ofPolyline *pl = nullptr;
-  for (const auto& segment : segments_)
+  for (const auto& segment : polygon_.segments)
   {
     if (lastIndex != segment.x)
     {
       pl = new ofPolyline();
-      pl->addVertex( vertices_[segment.x] );
+      pl->addVertex( polygon_.points[segment.x] );
       polylines_.push_back(pl);
     }
     lastIndex = segment.y;
-    pl->addVertex( vertices_[lastIndex] );
+    pl->addVertex( polygon_.points[lastIndex] );
   }
   ofPolyline *contour = polylines_[0];
 
@@ -78,12 +78,12 @@ void ofApp::setup()
 
   // Triangulate the shape.
   trimeshes_[ORIGINAL].triangulate(*contour);
-  trimeshes_[SIMPLE].triangulate(vertices_, segments_, holes_);
-  trimeshes_[CONVEX_HULL].triangulateConvexHull(vertices_);
-  trimeshes_[DELAUNAY].triangulateDelaunay(vertices_, segments_, holes_);
+  trimeshes_[SIMPLE].triangulateSimple(polygon_);
+  trimeshes_[CONVEX_HULL].triangulateConvexHull(polygon_.points);
+  trimeshes_[DELAUNAY].triangulateDelaunay(polygon_);
 
   /// @note
-  /// Should the need arises to send a buffer a different vector-type
+  /// Should the need arises to send a buffer of a different vector-type
   /// we could hack our way like this :
   //#define castVec ofxTriangleMesh::CastVector
   //trimesh.triangulateConvexHull(castVec(contour->getVertices()));
@@ -111,7 +111,7 @@ void ofApp::update()
   {
     const float angleConstraint = ofLerp(10.0f, 30.0f, dx);
     const float areaConstraint  = ofLerp(20.0f, 1000.0f, dy);
-    trimesh_current_->triangulateConstrainedDelaunay( vertices_, segments_, holes_, angleConstraint, areaConstraint);
+    trimesh_current_->triangulate( polygon_, angleConstraint, areaConstraint);
     trimesh_current_->generateVoronoiDiagram();
   }
 }
@@ -130,13 +130,13 @@ void ofApp::draw()
 
     // Faces
     if (faceToggle_) {
-      trimesh_current_->draw();
+      trimesh_current_->draw(bUseDebugColor);
     }
 
     // Vertices
     if (vertexToggle_) {
       ofSetColor(120, 255, 120);
-      for (auto &vertex : vertices_) {
+      for (auto &vertex : polygon_.points) {
         ofDrawCircle( vertex.x, vertex.y, 2);
       }
     }
@@ -150,7 +150,7 @@ void ofApp::draw()
       }
       // Holes
       ofSetColor(255, 120, 120);
-      for (auto hole : holes_) {
+      for (auto hole : polygon_.holes) {
         ofDrawCircle( hole.x, hole.y, 2);
       }
     }
@@ -174,7 +174,9 @@ void ofApp::draw()
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+  if (key == 'd') {
+    bUseDebugColor ^= true;
+  }
 }
 
 //--------------------------------------------------------------
@@ -242,10 +244,10 @@ void ofApp::ReadPolyFile(const string& filename)
   // Read vertices
   int numVertices, dummy;
   fscanf(fd, "%d 2 %d %d\n", &numVertices, &dummy, &dummy);
-  vertices_.resize(numVertices);
+  polygon_.points.resize(numVertices);
   for (int i=0; i<numVertices && !feof(fd); ++i) 
   {
-    auto &pt = vertices_[i];
+    auto &pt = polygon_.points[i];
     fscanf(fd, "%d %f %f %f\n", &dummy, &pt.x, &pt.y, &pt.z);
     pt.x *= +scaleFactor;
     pt.y *= -scaleFactor;
@@ -254,10 +256,10 @@ void ofApp::ReadPolyFile(const string& filename)
   // Read segments
   int numSegments;
   fscanf(fd, "%d 0\n", &numSegments);
-  segments_.resize(numSegments);
+  polygon_.segments.resize(numSegments);
   for (int i=0; i<numSegments && !feof(fd); ++i)
   {
-    auto &s = segments_[i];
+    auto &s = polygon_.segments[i];
     fscanf(fd, "%d %d %d\n", &dummy, &s.x, &s.y);
     s.x -= 1;
     s.y -= 1;
@@ -266,10 +268,10 @@ void ofApp::ReadPolyFile(const string& filename)
   // Read holes
   int numHoles;
   fscanf(fd, "%d\n", &numHoles);
-  holes_.resize(numHoles);
+  polygon_.holes.resize(numHoles);
   for (int i=0; i<numHoles && !feof(fd); ++i) 
   {
-    auto &pt = holes_[i];
+    auto &pt = polygon_.holes[i];
     fscanf(fd, "%d %f %f\n", &dummy, &pt.x, &pt.y);
     pt.x *= +scaleFactor;
     pt.y *= -scaleFactor;
@@ -280,10 +282,10 @@ void ofApp::ReadPolyFile(const string& filename)
   /*
   // [redundant with ofPolyline::getCentroid2D() but nice to keep]
   // Calculate center of gravity from bounding box.
-  auto resultX = std::minmax_element(vertices_.begin(), vertices_.end(), 
+  auto resultX = std::minmax_element(polygon_.points.begin(), polygon_.points.end(), 
     [](const auto &a, const auto &b) {return (a.x < b.x);}
   );
-  auto resultY = std::minmax_element(vertices_.begin(), vertices_.end(), 
+  auto resultY = std::minmax_element(polygon_.points.begin(), polygon_.points.end(), 
     [](const auto &a, const auto &b) {return (a.y < b.y);}
   );
   center_.x = 0.5f*(resultX.first->x + resultX.second->x);
