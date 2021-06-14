@@ -3,7 +3,7 @@ ofxTriangleMesh
 
 This extends the original `ofxTriangleMesh` addons to use more features from the `Triangle` library, namely triangulating simple polygon with holes and generating Voronoï Diagram, Conforming Delaunay Triangulation, and Convex Hull.
 
-An new example demonstrates the different features available.
+A new example demonstrates the different features available.
 
 ![](https://tlgur.com/d/4RaXEMyg)
 
