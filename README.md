@@ -1,6 +1,16 @@
 ofxTriangleMesh
 ===============
 
+This extends the original `ofxTriangleMesh` addons to use more features from the `Triangle` library, namely triangulating simple polygon with holes and generating Voronoï Diagram, Conforming Delaunay Triangulation, and Convex Hull.
+
+A new example demonstrates the different features available.
+
+![](https://tlgur.com/d/4RaXEMyg)
+
+(original README below)
+
+***
+
 triangle mesh addon for openframeworks
 
 this is based on ofxTriangle, but uses triangle rather than the c++ wrapper triangle++, which allows for more flexability and options in the triangulation. 

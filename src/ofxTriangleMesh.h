@@ -21,62 +21,39 @@
 
 #pragma once
 
-
-
 #include "ofMain.h"
+#include "triangle_utils.h"
 
+class ofxTriangleMesh : public TriangleUtils {
+  public:
+    using TriangleUtils::triangulate;
 
-
-
-typedef struct{
+    // usage notes: 
+    // -1 = don't use constraint, other values = use constraint 
+    // 
+    // for angle, 20-30 is pretty good
+    // https://www.cs.cmu.edu/~quake/triangle.q.html
+    // be careful!  "It usually doesn't terminate for angles above 34o"
+    //
+    // for size, this depends on the size of your shape, 
+    // 100 to 200 is a good first guess for screen resolution based points
+    void triangulate(const ofPolyline &contour, float angleConstraint=-1, int sizeConstraint=-1);
     
-    ofPoint pts[3];
-    int index[3];           // for the mesh, what points does this triangle relate to.
-    ofColor randomColor;    // useful for debugging / drawing 
+    void draw(bool use_debug_color = false) const;
+    void drawWireframe() const { triangulatedMesh.drawWireframe(); }
 
-} meshTriangle;
+    void drawVoronoi() const;
+    void drawCleanVoronoi(const VertexBuffer_t& poly) const;
 
-
-
-
-
-class ofxTriangleMesh {
+    ofMesh& mesh() { return triangulatedMesh; }
+    ofMesh const& mesh() const { return triangulatedMesh; }
     
-    public :
+    // Utility function to generate a convex hull from a polyline.
+    static void QuickHull(const ofPolyline &points, ofPolyline &hull);
 
+  private:
+    void generateTriangleMesh() override;
     
-    
-        ofxTriangleMesh();
-        
-    
-        // usage notes: 
-    
-        // -1 = don't use constraint, other values = use constraint 
-        // 
-        // for angle, 20-30 is pretty good
-        // https://www.cs.cmu.edu/~quake/triangle.q.html
-        // be careful!  "It usually doesn't terminate for angles above 34o"
-        //
-        // for size, this depends on the size of your shape, 
-        // 100 to 200 is a good first guess for screen resolution based points
-    
-        void triangulate(ofPolyline contour, float angleConstraint = -1, float sizeConstraint = -1);
-
-    
-        
-        ofPoint getTriangleCenter(ofPoint *tr);
-        bool isPointInsidePolygon(ofPoint *polygon,int N, ofPoint p);
-
-        void draw();
-        void clear();
-
-        int nTriangles;
-        vector <ofPoint> outputPts;
-        vector <meshTriangle> triangles;
-        ofMesh triangulatedMesh;
-    
-      
-    
-
-
+    ofMesh triangulatedMesh;
+    vector <ofColor> randomColors;
 };
