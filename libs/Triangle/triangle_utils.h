@@ -61,9 +61,7 @@ class TriangleUtils {
 
  public:
   TriangleUtils() = default;
-      
-  void triangulate(VertexBuffer_t const& contour, float angleConstraint=-1, int sizeConstraint=-1);
-
+   
   void clear() {
     trimesh_.points.clear();
     trimesh_.triangles.clear();
@@ -79,6 +77,14 @@ class TriangleUtils {
   // bAddVertices : when set to true, authorize the algorithm to add
   //   new vertices to fullfill its constraints.
   //-----------------------------------
+  
+  // Triangulate a contour. First and last vertex must be the same.
+  void triangulate(VertexBuffer_t const& contour, float angleConstraint=-1, int sizeConstraint=-1);
+
+  // Generic constrained Delaunay triangulation.
+  void triangulate(Polygon_t const& polygon, float angleConstraint=-1, int sizeConstraint=-1, bool bAddVertices=true) { 
+    triangulateConstrainedDelaunay( polygon, angleConstraint, sizeConstraint, bAddVertices);
+  }
 
   // Simple polygon triangulation.
   void triangulateSimple(Polygon_t const& polygon);
